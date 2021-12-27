@@ -3,6 +3,9 @@ import gsap from 'gsap'
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
+import vertex from 'shaders/vertex.glsl'
+import fragment from 'shaders/fragment.glsl'
+
 export default class {
     constructor() {
         this.threejsCanvas = document.querySelector('.threejs__canvas__container')
@@ -26,9 +29,14 @@ export default class {
         this.texture1 = new THREE.TextureLoader().load('textures/city.jpeg');
 
         const earthGeometry = new THREE.SphereBufferGeometry(1, 50, 50)
-        const earthMaterial = new THREE.MeshBasicMaterial({
-            color: 'red',
-            wireframe: true,
+        // const earthMaterial = new THREE.MeshBasicMaterial({
+        //     color: 'red',
+        //     wireframe: true,
+        // })
+        const earthMaterial = new THREE.ShaderMaterial({
+            vertexShader: vertex,
+            fragmentShader: fragment,
+            // wireframe: true
         })
 
         this.earth = new THREE.Mesh(earthGeometry, earthMaterial)
@@ -54,6 +62,10 @@ export default class {
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement)
         this.controls.enableDamping = true
+
+
+        const axesHelper = new THREE.AxesHelper(5)
+        this.scene.add(axesHelper)
 
     }
 
