@@ -46,7 +46,7 @@ export default class {
 
         this.plane.position.set(2,2,2)
 
-        this.scene.add(this.plane)
+        // this.scene.add(this.plane)
 
         this.raycaster = new THREE.Raycaster()
 
@@ -64,7 +64,8 @@ export default class {
 
         this.raycaster.setFromCamera(this.mouse, this.camera)
 
-        const objects = [this.plane]
+        const objects = []
+        // const objects = [this.plane]
         this.intersects = this.raycaster.intersectObjects(objects)
 
         if (this.intersects.length > 0) {
