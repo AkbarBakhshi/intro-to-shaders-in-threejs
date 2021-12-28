@@ -1,8 +1,8 @@
 # Quick Start Guide
 
-This repo includes the codes for the video on introduction to shader materials in ThreeJS. The **Starter** branch includes the starter code for the Youtube video. Check out other branches for more, and link to the videos on Youtube.
+This repo includes the codes for the video on introduction to shader materials in ThreeJS. The **Starter** branch includes the starter code and **Part1Final** branch has the code as of the end of the youtube video linked below:
 
-Note that the code in this branch is not final and you may encounter some errors while navigating through the website pages.
+https://youtu.be/Sukvxf7FfYM
 
 Download or clone the project on your local drive. Open Terminal (Command prompt) and navigate to the project folder. Then run ```npm install```. You should see a new folder called **node_modules** in the project folder.
 
