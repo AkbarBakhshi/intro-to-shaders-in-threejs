@@ -1,21 +1,27 @@
 import * as THREE from 'three'
 import gsap from 'gsap'
 
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 import vertex from 'shaders/vertex.glsl'
 import fragment from 'shaders/fragment.glsl'
 
+import textureVertex from 'shaders/textureVertex.glsl'
+import textureFragment from 'shaders/textureFragment.glsl'
+
 export default class {
     constructor() {
+
+        this.clock = new THREE.Clock()
+
         this.threejsCanvas = document.querySelector('.threejs__canvas__container')
         this.width = this.threejsCanvas.offsetWidth
         this.height = this.threejsCanvas.offsetHeight
 
         this.scene = new THREE.Scene()
         this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 1000)
-        this.camera.position.set(0,0,4)
-        this.camera.lookAt(0, 0, 0)
+        this.camera.position.set(2, 2, 4)
+        // this.camera.lookAt(0, 0, 0)
 
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
@@ -44,28 +50,45 @@ export default class {
         this.scene.add(this.earth)
 
         const planeGeometry = new THREE.PlaneBufferGeometry(3, 3)
-        const planeMaterial = new THREE.MeshBasicMaterial({
-            map: this.texture1,
+        // const planeMaterial = new THREE.MeshBasicMaterial({
+        //     map: this.texture1,
+        //     side: THREE.DoubleSide,
+        // })
+        this.planeMaterial  = new THREE.ShaderMaterial({
+            vertexShader: textureVertex,
+            fragmentShader: textureFragment,
             side: THREE.DoubleSide,
+            uniforms: {
+                uTexture: {
+                    value: this.texture1
+                },
+                uAlpha: {
+                    value: 1
+                },
+                uTime: {
+                    value:0
+                }
+            },
+            transparent: true
         })
 
-        this.plane = new THREE.Mesh(planeGeometry, planeMaterial)
+        this.plane = new THREE.Mesh(planeGeometry, this.planeMaterial)
 
 
         this.plane.position.set(2,2,2)
 
-        // this.scene.add(this.plane)
+        this.scene.add(this.plane)
 
         this.raycaster = new THREE.Raycaster()
 
         this.mouse = new THREE.Vector2()
 
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-        this.controls.enableDamping = true
+        // this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+        // this.controls.enableDamping = true
 
 
-        const axesHelper = new THREE.AxesHelper(5)
-        this.scene.add(axesHelper)
+        // const axesHelper = new THREE.AxesHelper(5)
+        // this.scene.add(axesHelper)
 
     }
 
@@ -76,33 +99,44 @@ export default class {
 
         this.raycaster.setFromCamera(this.mouse, this.camera)
 
-        const objects = []
-        // const objects = [this.plane]
+        // const objects = []
+        const objects = [this.plane]
         this.intersects = this.raycaster.intersectObjects(objects)
 
         if (this.intersects.length > 0) {
             console.log('clicked on object')
+            // gsap.timeline()
+            //     .to('.threejs__canvas__container', { scale: 0, duration: 2 })
+            //     .to('.threejs', { x: '100%', duration: 2 }, 0)
+
             gsap.timeline()
-                .to('.threejs__canvas__container', { scale: 0, duration: 2 })
-                .to('.threejs', { x: '100%', duration: 2 }, 0)
+                .to(this.planeMaterial.uniforms.uAlpha, {
+                    duration: 1,
+                    value: 0,
+                    ease: "power4.inOut"
+                })
+                .to(this.plane.scale, { x: 0, y: 0, z: 0 }, 0)
         }
     }
 
     onMouseUp(event) {
         if (this.intersects.length > 0) {
-            console.log('released')
-            gsap.timeline()
-                .to('.threejs__canvas__container', { scale: 2, duration: 3 })
-                .to('.threejs', { x: 0, duration: 3 }, 0)
+            // console.log('released')
+            // gsap.timeline()
+            //     .to('.threejs__canvas__container', { scale: 2, duration: 3 })
+            //     .to('.threejs', { x: 0, duration: 3 }, 0)
         }
     }
 
     update() {
         // console.log('three update')
         this.renderer.render(this.scene, this.camera)
-        this.controls.update()
+        // this.controls.update()
         // this.cube.rotation.x += 0.01;
         // this.cube.rotation.y += 0.01;
+
+        const elapsedTime = this.clock.getElapsedTime()
+        this.planeMaterial.uniforms.uTime.value = elapsedTime
     }
 
 
